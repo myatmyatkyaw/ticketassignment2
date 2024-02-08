@@ -62,6 +62,7 @@
                                 <td> @foreach ($ticket->ticketFiles as $file)
                                     <img src="{{ asset('storage/gallery/'. $file->file_name) }}" alt="{{ $file->file_name }}" style="max-width: 50px; max-height: 50px;">
                                 @endforeach</td>
+                                
                                 {{-- <td>{{ $ticket->label_id }}</td>
                                 <td>{{ $ticket->category_id }}</td> --}}
                                 {{-- <td>{{ $user->role  }}</td> --}}

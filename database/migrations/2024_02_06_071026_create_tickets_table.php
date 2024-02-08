@@ -23,6 +23,11 @@ class CreateTicketsTable extends Migration
             $table->longText('status')->default('open');
             $table->longText('file')->nullable();
             //$table->foreignId('user_id')->cascadeOnDelete();
+
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('agent_id')->nullable();
+            //$table->foreign('agent_id')->references('id')->on('users')->onDelete('cascade');
+
             // $table->foreignId('category_id')->cascadeOnDelete();
 
             // $table->boolean('is_resolved')->default(false);

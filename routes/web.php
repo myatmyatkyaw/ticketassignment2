@@ -20,7 +20,7 @@ use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
     return view('dashboard/index');
-});
+})->middleware('auth');
 
 Auth::routes();
 
@@ -30,3 +30,7 @@ Route::resource('label',LabelController::class);
 Route::resource('category', CategoryController::class);
 Route::resource('ticket',TicketController::class);
 Route::resource('comment', CommentController::class);
+Route::post('/', [CommentController::class, 'store'])->name('comment.store');
+Route::put('/{comment}', [CommentController::class, 'update'])->name('comment.update');
+// Route::put('/comments/{comment}', CommentController::class,'update')->name('comment.update');
+

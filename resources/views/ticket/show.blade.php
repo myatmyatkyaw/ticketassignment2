@@ -26,7 +26,9 @@
                                 <td>{{ $ticket->message }}</td>
                                 <td>{{ $ticket->priority }}</td>
                                 <td>{{ $ticket->status }}</td>
-                                <td> <img src="{{ asset('storage/gallery/'. $ticket->file) }}" alt="{{ $ticket->name }}" style="max-width: 50px; max-height: 50px;" ></td>
+                                <td> @foreach ($ticket->ticketFiles as $file)
+                                    <img src="{{ asset('storage/gallery/'. $file->file_name) }}" alt="{{ $file->file_name }}" style="max-width: 50px; max-height: 50px;">
+                                @endforeach</td>
                                 <td>
                                   @foreach($ticket->category as $category)
                                         {{ $category->name }}
@@ -54,7 +56,7 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body shadow">
-                            <form class="row g-2" action="{{ route('comment.store') }}" method="post">
+                            {{-- <form class="row g-2" action="{{ route('comment.store') }}" method="post">
                                 @csrf
                                 <div class="col-auto">
                                   <label for="inputtext" class="">Comment</label>
@@ -63,6 +65,43 @@
                                   <button type="submit" class="btn btn-primary">Send</button>
                                   </div>
                             </form>
+
+                            <form class="row g-2" action="{{ route('comment.update') }}" method="post">
+                                @csrf
+                                @method('PUT')
+                                <div class="col-auto">
+                                  <label for="inputtext" class="">Comment</label>
+                                  <input type="text" class="form-control mb-3" id="inputtext" placeholder="Add comment" name="message">
+                                  <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
+                                  <button type="submit" class="btn btn-primary">Update</button>
+                                  </div>
+                            </form> --}}
+                            @if ($comment)
+                            <!-- Form for updating comment -->
+                            <form class="row g-2" action="{{ route('comment.update', $comment->id) }}" method="post">
+                                @csrf
+                                @method('PUT')
+                                <div class="col-auto">
+                                    <label for="inputtext" class="">Comment</label>
+                                    <input type="text" class="form-control mb-3" id="inputtext" placeholder="Add comment" name="message" value="{{ $comment->message }}">
+                                    <input type="hidden" name="ticket_id" value="{{ $comment->ticket_id }}">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        @else
+                            <!-- Form for creating new comment -->
+                            <form class="row g-2" action="{{ route('comment.store') }}" method="post">
+                                @csrf
+                                <div class="col-auto">
+                                    <label for="inputtext" class="">Comment</label>
+                                    <input type="text" class="form-control mb-3" id="inputtext" placeholder="Add comment" name="message">
+                                    <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
+                                    <button type="submit" class="btn btn-primary">Send</button>
+                                </div>
+                            </form>
+                        @endif
+
+
                         </div>
                     </div>
                 </div>
@@ -75,13 +114,36 @@
                                     <h5 class="card-title">{{ $comment->user->name}}</h5>
                                     <p class="card-text">{{ $comment->message }}</p>
                                 </div>
+
+
+                                @if (Auth::check() && (Auth::user()->role != '2'))
+
                                 <div class="col-auto">
+                                    <a href="{{ route('comment.edit', $comment->id) }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <form method="post" action="{{ route('comment.destroy', $comment->id) }}" class="d-inline-block">
+                                        @method('delete')
+                                        @csrf
+                                        <button class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            @endif
+
+
+                                {{-- <div class="col-auto">
+                                    <a href="{{ route('comment.update', $ticket->comment->id) }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-pencil-alt"></i>
+                                      </a>
                                     <form method="post" action = "{{ route('comment.destroy', $comment->id) }}" class="d-inline-block">
                                         @method('delete')
                                         @csrf
                                         <button class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete?')"><i class="fas fa-trash-alt"></i></button>
                                     </form>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         @endforeach

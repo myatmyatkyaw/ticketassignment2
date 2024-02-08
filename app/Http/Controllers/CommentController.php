@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Ticket;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,7 +67,14 @@ class CommentController extends Controller
      */
     public function edit($id)
     {
-        //
+
+        $comment = Comment::find($id);
+        // return ;
+        $ticket = Ticket::find($comment->ticket_id);
+        // return $ticket;
+        // $users = User::all();
+        // $agents = User::where('role', '1')->get();
+        return view('ticket.show',compact('comment','ticket'));
     }
 
     /**
@@ -77,7 +86,14 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $comment = Comment::find($id);
+        $comment->message = $request->message;
+        $comment->user_id = Auth::user()->id;
+        //$comment->agent_id = $request->agent_id;
+        $comment->ticket_id = $request->ticket_id;
+        $comment->update();
+        return redirect()->back();
+
     }
 
     /**
@@ -93,5 +109,7 @@ class CommentController extends Controller
             $comment->delete();
         }
         return redirect()->back();
+
+
     }
 }
