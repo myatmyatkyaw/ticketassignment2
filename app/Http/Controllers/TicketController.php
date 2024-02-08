@@ -16,8 +16,15 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::all();
-        return view('ticket.index',compact('tickets'));
+        // $tickets = Ticket::all();
+        // return view('ticket.index',compact('tickets'));
+
+        if (auth()->user()->isAdmin()) {
+            $tickets = Ticket::all();
+        } else {
+            $tickets = Ticket::where('user_id', auth()->id())->get();
+        }
+        return view('tickets.index', compact('tickets'));
     }
 
     /**
@@ -40,55 +47,35 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-<<<<<<< HEAD
-        $file = $request->file('file'); // Accessing the file correctly
-
-if ($file) {
-    $newName = "gallery_" . uniqid() . "." . $file->extension();
-    $file->storeAs("public/gallery", $newName);
-    // $ticket->file = $newName;
-}
 
         $ticket = new Ticket();
         $ticket->title = $request->title;
         $ticket->message = $request->message;
         $ticket->priority = $request->priority;
-        // $ticket->category_id = $request->category_id;
-        // $ticket->label_id = $request->label_id;
-        $ticket->file = $newName;
         $ticket->status = $request->status;
-        // $ticket->file = $request->file;
         $ticket->save();
-        if($request->category_id){
-            $ticket->category()->attach($request->category_id);
+
+        foreach ($request->file('files') as $file) {
+            if ($file) {
+                $newName = "gallery_" . uniqid() . "." . $file->extension();
+                $file->storeAs("public/gallery", $newName);
+
+                // Create a file record in the ticket_files table
+                $ticket->ticketFiles()->create([
+                    'file_name' => $newName,
+                ]);
+            }
         }
-        if($request->label_id)
-        {
-            $ticket->label()->attach($request->label_id);
-        }
 
+            if ($request->category_id) {
+                $ticket->category()->attach($request->category_id);
+            }
 
-        // $ticket->label()->sync($request->input('labels', []));
-        // $ticket->category()->sync($request->input('categories',[]));
-=======
-        $ticket = Ticket::create($request->all());
+            if ($request->label_id) {
+                $ticket->label()->attach($request->label_id);
+            }
 
-        $ticket->labels()->attach($request->labels);
-        $ticket->categories()->attach($request->categories);
-
-        // $ticket = new Ticket();
-        // $ticket->title = $request->title;
-        // $ticket->message = $request->message;
-        // $ticket->priority = $request->priority;
-        // $ticket->category_id = $request->category;
-        // $ticket->label_id = $request->label;
-        // $ticket->status = $request->status;
-        // $ticket->file = $request->file;
-        // $ticket->save();
-        // $ticket->label()->sync($request->input('label', []));
-        // $ticket->category()->sync($request->input('category',[]));
->>>>>>> 4f6e6fb0aba077bf7c03627090d7dc4c36d33b3c
-        return redirect()->route('ticket.index')->with('success','Ticket is created successfully');
+            return redirect()->route('ticket.index')->with('success', 'Ticket is created successfully');
     }
 
     /**

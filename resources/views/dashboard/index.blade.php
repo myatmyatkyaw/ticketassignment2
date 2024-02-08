@@ -70,6 +70,7 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
+        @if(auth()->user()->role == '0')
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
@@ -158,6 +159,65 @@
 
 
         </ul>
+        @endif
+
+        @if(auth()->user()->role == '1')
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 with font-awesome or any other icon font library -->
+
+            <li class="nav-item">
+              <a href="{{ route('ticket.create') }}" class="nav-link">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>
+                Create Ticket
+
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{{ route('ticket.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-id-card"></i>
+                <p>
+                Ticket List
+
+                </p>
+              </a>
+            </li>
+
+
+          </ul>
+        @endif
+
+        @if(auth()->user()->role == '2')
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 with font-awesome or any other icon font library -->
+
+            <li class="nav-item">
+              <a href="{{ route('ticket.create') }}" class="nav-link">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>
+                Create Ticket
+
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{{ route('ticket.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-id-card"></i>
+                <p>
+                Ticket List
+
+                </p>
+              </a>
+            </li>
+
+
+          </ul>
+        @endif
       </nav>
       <!-- /.sidebar-menu -->
     </div>

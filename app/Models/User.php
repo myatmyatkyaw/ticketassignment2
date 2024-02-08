@@ -43,8 +43,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // public function tickets(): HasMany
-    // {
-    //     return $this->hasMany(Ticket::class, 'user_id');
-    // }
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 }

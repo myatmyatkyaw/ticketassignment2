@@ -30,7 +30,13 @@ class TicketPolicy
      */
     public function view(User $user, Ticket $ticket)
     {
-        //
+        // Allow admins to view all tickets
+    if ($user->isAdmin()) {
+        return true;
+    }
+
+    // Allow regular users to view only their own tickets
+    return $user->id === $ticket->user_id;
     }
 
     /**

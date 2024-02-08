@@ -16,13 +16,13 @@ class CreateTicketsTable extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             //$table->uuid('uuid')->nullable();
-            // $table->foreignId('user_id')->cascadeOnDelete();
+
             $table->string('title');
             $table->longText('message')->nullable();
             $table->string('priority')->default('low');
             $table->longText('status')->default('open');
             $table->longText('file')->nullable();
-            // $table->foreignId('label_id')->cascadeOnDelete();
+            //$table->foreignId('user_id')->cascadeOnDelete();
             // $table->foreignId('category_id')->cascadeOnDelete();
 
             // $table->boolean('is_resolved')->default(false);
