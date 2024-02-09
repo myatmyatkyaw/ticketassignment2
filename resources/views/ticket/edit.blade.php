@@ -105,7 +105,7 @@
                             @enderror
                         </div>
                         @endif
-                        <input type="hidden" name="user_id" value="{{ Auth()->user()->id }}">
+                        {{-- <input type="hidden" name="user_id" value="{{ Auth()->user()->id }}"> --}}
 
                         <div class="col-sm mt-3">
                         <a href="{{ route('ticket.index') }}" class="btn btn-outline-dark">Back</a>

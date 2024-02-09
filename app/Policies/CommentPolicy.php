@@ -53,7 +53,7 @@ class CommentPolicy
      */
     public function update(User $user, Comment $comment)
     {
-        return $user->isAdmin() || $user->isAgent();
+        //return $user->isAdmin() || $user->isAgent();
     }
 
     /**

@@ -7,8 +7,9 @@ use App\Models\Label;
 use App\Models\Ticket;
 use App\Models\Comment;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreTicketRequest;
+use App\Http\Requests\UpdateTicketRequest;
 
 class TicketController extends Controller
 {
@@ -19,9 +20,6 @@ class TicketController extends Controller
      */
     public function index()
     {
-        // $tickets = Ticket::all();
-        // return view('ticket.index',compact('tickets'));
-
         $user = auth()->user();
 
         if ($user->role === '0') {
@@ -47,18 +45,20 @@ class TicketController extends Controller
      */
     public function create()
     {
+        // $users = User::all();
         $categories = Category::all();
         $labels = Label::all();
-        return view('ticket.create',compact('categories','labels'));
+
+        return view('ticket.create', compact('categories','labels'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreTicketRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTicketRequest $request)
     {
 
         $ticket = new Ticket();
@@ -67,8 +67,8 @@ class TicketController extends Controller
         $ticket->priority = $request->priority;
         $ticket->status = $request->status;
         $ticket->user_id = $request->user_id;
-
         $ticket->save();
+        // return $ticket;
 
         foreach ($request->file('files') as $file) {
             if ($file) {
@@ -90,32 +90,31 @@ class TicketController extends Controller
                 $ticket->label()->attach($request->label_id);
             }
 
-            return redirect()->route('ticket.index')->with('success', 'Ticket is created successfully');
+            return redirect()->route('ticket.index')->with('success', 'Ticket is Updated successfully');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Ticket $ticket)
     {
-        $ticket = Ticket::find($id);
-        $comment = Comment::find($id);
-        return view('ticket.show',compact('ticket','comment'));
+        $categories = Category::all();
+        $labels = Label::all();
+        return view('ticket.show', compact('ticket','categories','labels'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Ticket $ticket)
     {
-
-        $ticket = Ticket::find($id);
+        // return $ticket;
         $existingCategories = $ticket->category->pluck('id')->toArray();
         $existingLabels = $ticket->label->pluck('id')->toArray();
         $categories = Category::all();
@@ -128,81 +127,81 @@ class TicketController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Http\Requests\UpdateTicketRequest  $request
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
-        $ticket = Ticket::find($id);
+        // return $request;
+
        // If new files are provided, delete existing files and update with new files
-       if ($request->hasFile('files')) {
-        // Delete existing files associated with the ticket
-        foreach ($ticket->ticketFiles as $file) {
-            Storage::delete("public/gallery/{$file->file_name}");
-            $file->delete();
-        }
-
-        // Update ticket information
-        $ticket->title = $request->title;
-        $ticket->message = $request->message;
-        $ticket->priority = $request->priority;
-        $ticket->status = $request->status;
-        $ticket->user_id = $request->user_id;
-        $ticket->agent_id = $request->agent_id;
-        $ticket->update();
-
-        // Upload new files
-        foreach ($request->file('files') as $file) {
-            if ($file) {
-                $newName = "gallery_" . uniqid() . "." . $file->extension();
-                $file->storeAs("public/gallery", $newName);
-
-                // Create a file record in the ticket_files table
-                $ticket->ticketFiles()->create([
-                    'file_name' => $newName,
-                ]);
+        if ($request->hasFile('files')) {
+            // Delete existing files associated with the ticket
+            foreach ($ticket->ticketFiles as $file) {
+                Storage::delete("public/gallery/{$file->file_name}");
+                $file->delete();
             }
-        }
-    } else {
-        // If no new files are provided, update only the ticket information
-        $ticket->title = $request->title;
-        $ticket->message = $request->message;
-        $ticket->priority = $request->priority;
-        $ticket->status = $request->status;
-        $ticket->user_id = $request->user_id;
-        $ticket->agent_id = $request->agent_id;
-        $ticket->update();
+
+            // Update ticket information
+            $ticket->title = $request->title;
+            $ticket->message = $request->message;
+            $ticket->priority = $request->priority;
+            $ticket->status = $request->status;
+            // $ticket->user_id = $request->user_id;
+            $ticket->agent_id = $request->agent_id;
+            $ticket->update();
 
 
-    }
+            // Upload new files
+            foreach ($request->file('files') as $file) {
+                if ($file) {
+                    $newName = "gallery_" . uniqid() . "." . $file->extension();
+                    $file->storeAs("public/gallery", $newName);
 
-    // Attach categories and labels if provided
-    if ($request->category_id) {
-        $ticket->category()->sync($request->category_id);
-    }
+                    // Create a file record in the ticket_files table
+                    $ticket->ticketFiles()->create([
+                        'file_name' => $newName,
+                    ]);
+                }
+            }
+            } else {
+                // If no new files are provided, update only the ticket information
+                $ticket->title = $request->title;
+                $ticket->message = $request->message;
+                $ticket->priority = $request->priority;
+                $ticket->status = $request->status;
+                // $ticket->user_id = $request->user_id;
+                $ticket->agent_id = $request->agent_id;
+                $ticket->update();
 
-    if ($request->label_id) {
-        $ticket->label()->sync($request->label_id);
-    }
 
-    return redirect()->route('ticket.index')->with('success', 'Ticket is updated successfully');
+            }
 
+            // Attach categories and labels if provided
+            if ($request->category_id) {
+                $ticket->category()->sync($request->category_id);
+            }
+
+            if ($request->label_id) {
+                $ticket->label()->sync($request->label_id);
+            }
+
+            return redirect()->route('ticket.index')->with('success', 'Ticket is updated successfully');
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Ticket $ticket)
     {
-        $ticket = Ticket::find($id);
         if($ticket){
             $ticket->delete();
         }
-        return redirect()->route('ticket.index')->with('delete','Ticket is deleted!');
+        return redirect()->back()->with('delete','Ticket is Deleted Successfully');
     }
 }

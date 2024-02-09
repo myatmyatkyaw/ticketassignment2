@@ -61,14 +61,14 @@
                                 <td>{{ $ticket->status }}</td>
                                 <td> @foreach ($ticket->ticketFiles as $file)
                                     <img src="{{ asset('storage/gallery/'. $file->file_name) }}" alt="{{ $file->file_name }}" style="max-width: 50px; max-height: 50px;">
-                                @endforeach</td>
-                                
+                                @endforeach </td>
+
                                 {{-- <td>{{ $ticket->label_id }}</td>
                                 <td>{{ $ticket->category_id }}</td> --}}
                                 {{-- <td>{{ $user->role  }}</td> --}}
 
                                 {{-- <td> --}}
-                                    @if (Auth::check() && (Auth::user()->role == '2' ))
+                                    @if ( Auth::user()->role == '2' )
                                     <td>
                                     <a href="{{ route('ticket.show', $ticket->id) }}" class="btn btn-outline-secondary">
                                         <i class="fas fa-info"></i>

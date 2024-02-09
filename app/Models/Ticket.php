@@ -33,7 +33,7 @@ class Ticket extends Model
         return $this->belongsToMany(Label::class);
     }
 
-    public function comment(){
+    public function comments(){
         return $this->hasMany(Comment::class);
      }
      public function ticketFiles()

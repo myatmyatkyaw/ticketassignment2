@@ -44,14 +44,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function isAdmin()
-    {
-        return $this->role === '0';
-    }
-    public function isAgent()
-{
-    return $this->role === '1';
-}
+//     public function isAdmin()
+//     {
+//         return $this->role === '0';
+//     }
+//     public function isAgent()
+// {
+//     return $this->role === '1';
+// }
     public function ticket(){
         return $this->hasMany(Ticket::class);
     }
